@@ -10,6 +10,7 @@ import {
   Mic2,
   Clock3,
   Settings,
+  DollarSign,
 } from "lucide-react";
 import { NavLink } from "@/components/nav-link";
 
@@ -45,6 +46,9 @@ export function Sidebar() {
         </NavLink>
         <NavLink href="/crons" icon={<Clock3 size={18} />}>
           {t("crons")}
+        </NavLink>
+        <NavLink href="/billing" icon={<DollarSign size={18} />}>
+          {t("billing")}
         </NavLink>
         <NavLink href="/settings" icon={<Settings size={18} />}>
           {t("settings")}
