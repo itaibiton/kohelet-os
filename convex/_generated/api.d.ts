@@ -8,13 +8,35 @@
  * @module
  */
 
+import type * as agents from "../agents.js";
+import type * as cronJobs from "../cronJobs.js";
+import type * as memoryStore from "../memoryStore.js";
+import type * as messages from "../messages.js";
+import type * as seed from "../seed.js";
+import type * as sessions from "../sessions.js";
+import type * as standups from "../standups.js";
+import type * as stats from "../stats.js";
+import type * as tasks from "../tasks.js";
+import type * as users from "../users.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  agents: typeof agents;
+  cronJobs: typeof cronJobs;
+  memoryStore: typeof memoryStore;
+  messages: typeof messages;
+  seed: typeof seed;
+  sessions: typeof sessions;
+  standups: typeof standups;
+  stats: typeof stats;
+  tasks: typeof tasks;
+  users: typeof users;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.
