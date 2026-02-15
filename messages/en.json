@@ -1,0 +1,16 @@
+{
+  "app": {
+    "title": "Kohelet OS",
+    "tagline": "Multi-agent operations cockpit",
+    "nav": {
+      "dashboard": "Dashboard",
+      "orgChart": "Org Chart",
+      "agents": "Agents",
+      "tasks": "Tasks",
+      "sessions": "Sessions",
+      "standups": "Standups",
+      "crons": "Crons",
+      "settings": "Settings"
+    }
+  }
+}
