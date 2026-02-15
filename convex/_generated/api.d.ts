@@ -10,6 +10,7 @@
 
 import type * as agents from "../agents.js";
 import type * as cronJobs from "../cronJobs.js";
+import type * as http from "../http.js";
 import type * as memoryStore from "../memoryStore.js";
 import type * as messages from "../messages.js";
 import type * as seed from "../seed.js";
@@ -28,6 +29,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   agents: typeof agents;
   cronJobs: typeof cronJobs;
+  http: typeof http;
   memoryStore: typeof memoryStore;
   messages: typeof messages;
   seed: typeof seed;

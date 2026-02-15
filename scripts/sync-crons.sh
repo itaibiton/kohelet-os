@@ -1,7 +1,7 @@
 #!/bin/bash
 # Sync OpenClaw cron jobs to Convex
 
-CONVEX_URL="https://oceanic-mallard-600.eu-west-1.convex.cloud"
+CONVEX_URL="https://oceanic-mallard-600.eu-west-1.convex.site"
 
 create_cron() {
   local name="$1"

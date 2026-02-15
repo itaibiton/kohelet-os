@@ -4,7 +4,7 @@
 #        ./scripts/bridge.sh session-log <agentName> <tokens> <cost> [summary]
 #        ./scripts/bridge.sh task <title> [priority] [agentName]
 
-CONVEX_URL="https://oceanic-mallard-600.eu-west-1.convex.cloud"
+CONVEX_URL="https://oceanic-mallard-600.eu-west-1.convex.site"
 
 case "$1" in
   agent-status)
