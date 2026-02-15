@@ -1,8 +1,7 @@
+"use client";
+
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 
 export default function SettingsPage() {
   return (
@@ -15,20 +14,21 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Workspace</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Workspace name</label>
-            <Input placeholder="Kohelet OS" />
+        <CardContent className="space-y-3 text-sm text-muted-foreground">
+          <div className="flex items-center justify-between">
+            <span>App name</span>
+            <span className="text-white">Kohelet OS</span>
           </div>
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Default models</label>
-            <Input placeholder="opus46 / gemini-pro" />
+          <div className="flex items-center justify-between">
+            <span>Version</span>
+            <span className="text-white">v0.1.1</span>
           </div>
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Status message</label>
-            <Textarea placeholder="Operating status and release notes." />
+          <div className="flex items-center justify-between">
+            <span>Convex URL</span>
+            <span className="text-white">
+              {process.env.NEXT_PUBLIC_CONVEX_URL ?? "Not configured"}
+            </span>
           </div>
-          <Button>Save settings</Button>
         </CardContent>
       </Card>
     </div>

@@ -1,33 +1,32 @@
+"use client";
+
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
-const sessions = [
-  {
-    id: "S-1001",
-    agent: "Atlas",
-    status: "active",
-    tokens: "42k",
-    started: "09:10 UTC",
-  },
-  {
-    id: "S-1000",
-    agent: "Forge",
-    status: "completed",
-    tokens: "88k",
-    started: "08:02 UTC",
-  },
-  {
-    id: "S-0999",
-    agent: "Halo",
-    status: "error",
-    tokens: "15k",
-    started: "07:44 UTC",
-  },
-];
+const statusVariant: Record<string, "default" | "secondary" | "warning" | "danger"> = {
+  active: "default",
+  completed: "secondary",
+  error: "danger",
+};
+
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(value);
+}
 
 export default function SessionsPage() {
+  const sessions = useQuery(api.sessions.list);
+  const agents = useQuery(api.agents.list);
+  const agentById = new Map(agents?.map((agent) => [agent._id, agent]) ?? []);
+
   return (
     <div>
       <PageHeader
@@ -53,23 +52,57 @@ export default function SessionsPage() {
           </Select>
         </CardContent>
       </Card>
-      <div className="mt-6 grid gap-4">
-        {sessions.map((session) => (
-          <Card key={session.id}>
-            <CardContent className="flex flex-wrap items-center justify-between gap-4 py-4 text-sm">
-              <div>
-                <div className="text-white">{session.id}</div>
-                <div className="text-muted-foreground">{session.agent}</div>
-              </div>
-              <div className="text-muted-foreground">{session.started}</div>
-              <div className="text-muted-foreground">{session.tokens} tokens</div>
-              <div className="rounded-full bg-white/10 px-3 py-1 text-xs text-white">
-                {session.status}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {sessions === undefined ? (
+        <div className="mt-6 grid gap-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Card key={index} className="animate-pulse">
+              <CardContent className="h-16" />
+            </Card>
+          ))}
+        </div>
+      ) : sessions.length === 0 ? (
+        <Card className="mt-6">
+          <CardContent className="py-6 text-sm text-muted-foreground">
+            No sessions yet.
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="mt-6 grid gap-4">
+          {sessions.map((session) => {
+            const agent = agentById.get(session.agentId);
+            return (
+              <Card key={session._id}>
+                <CardContent className="flex flex-wrap items-center justify-between gap-4 py-4 text-sm">
+                  <div>
+                    <div className="text-white">
+                      {agent ? `${agent.emoji} ${agent.name}` : "Unknown agent"}
+                    </div>
+                    <div className="text-muted-foreground">
+                      {session.startedAt
+                        ? new Date(session.startedAt).toUTCString()
+                        : "--"}
+                    </div>
+                  </div>
+                  <div className="text-muted-foreground">
+                    {(session.tokenCount ?? 0).toLocaleString()} tokens
+                  </div>
+                  <div className="text-muted-foreground">
+                    {formatCurrency(session.cost ?? 0)}
+                  </div>
+                  {session.summary && (
+                    <div className="text-xs text-muted-foreground">
+                      {session.summary}
+                    </div>
+                  )}
+                  <Badge variant={statusVariant[session.status] ?? "secondary"}>
+                    {session.status}
+                  </Badge>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
