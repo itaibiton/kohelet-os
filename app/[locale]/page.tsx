@@ -71,3 +71,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+// Kohelet OS v0.1
