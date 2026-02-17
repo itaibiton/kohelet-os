@@ -30,7 +30,7 @@ export function NavLink({
     <Link
       href={resolvedHref}
       className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/5 hover:text-white hover:shadow-[0_0_16px_rgba(27,107,109,0.18)]",
+        "flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-muted-foreground transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/5 hover:text-white hover:shadow-[0_0_16px_rgba(27,107,109,0.18)]",
         isActive && "bg-white/10 text-white shadow-[0_0_18px_rgba(196,135,90,0.2)]"
       )}
     >

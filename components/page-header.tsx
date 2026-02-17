@@ -15,7 +15,7 @@ export function PageHeader({
   return (
     <div className={cn("mb-6 flex flex-wrap items-center justify-between gap-4", className)}>
       <div>
-        <h1 className="text-2xl font-semibold text-white">{title}</h1>
+        <h1 className="text-xl font-semibold text-white sm:text-2xl">{title}</h1>
         {description ? (
           <p className="text-sm text-muted-foreground">{description}</p>
         ) : null}

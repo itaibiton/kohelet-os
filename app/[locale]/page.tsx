@@ -148,7 +148,7 @@ export default function DashboardPage() {
         description="Real-time snapshot of the Kohelet agentic operating system."
       />
 
-      <div className="grid gap-6 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
         {stats === undefined
           ? statCards.map((stat) => <LoadingCard key={stat.key} />)
           : statCards.map((stat) => {
@@ -174,7 +174,7 @@ export default function DashboardPage() {
                     <span className="text-lg">{stat.icon}</span>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <div className="text-3xl font-semibold text-white">
+                    <div className="text-2xl font-semibold text-white sm:text-3xl">
                       {value}
                     </div>
                     <div className="text-xs text-zinc-500">{label}</div>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
             })}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.3fr_1fr]">
+      <div className="grid gap-4 sm:gap-6 xl:grid-cols-[1.3fr_1fr]">
         <Card className="border border-white/5 bg-white/[0.03]">
           <CardHeader>
             <CardTitle>Agent Status Grid</CardTitle>

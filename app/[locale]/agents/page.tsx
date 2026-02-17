@@ -190,7 +190,7 @@ export default function AgentsPage() {
         title="Agents"
         description="All agent personas, roles, and current status."
       />
-      <div className="flex flex-wrap items-center gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="flex flex-col items-start gap-3 overflow-x-auto rounded-xl border border-white/10 bg-white/[0.03] p-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:p-4" style={{ WebkitOverflowScrolling: "touch" }}>
         <Tabs value={view} onValueChange={setView}>
           <TabsList>
             <TabsTrigger value="grid">Grid</TabsTrigger>
@@ -207,7 +207,7 @@ export default function AgentsPage() {
           </TabsList>
         </Tabs>
         <Select
-          className="w-48"
+          className="w-full sm:w-48"
           value={department}
           onChange={(event) => setDepartment(event.target.value)}
         >
