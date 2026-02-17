@@ -56,7 +56,7 @@ export default function SessionsPage() {
         <CardHeader>
           <CardTitle className="text-base">Filters</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-3">
+        <CardContent className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           <Select value={agentFilter} onChange={(event) => setAgentFilter(event.target.value)}>
             <option value="all">All agents</option>
             {agents?.map((agent) => (

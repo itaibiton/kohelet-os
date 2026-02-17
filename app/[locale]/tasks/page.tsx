@@ -50,7 +50,7 @@ export default function TasksPage() {
     return (
       <div>
         <PageHeader title="Tasks" description="Kanban view of current workstreams." />
-        <div className="grid gap-4 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {columns.map((column) => (
             <Card key={column.key} className="animate-pulse">
               <CardHeader>
@@ -75,7 +75,7 @@ export default function TasksPage() {
   return (
     <div>
       <PageHeader title="Tasks" description="Kanban view of current workstreams." />
-      <div className="grid gap-4 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {columns.map((column) => (
           <Card key={column.key} className="border border-white/5 bg-white/[0.03]">
             <CardHeader className="space-y-3">

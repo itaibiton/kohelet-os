@@ -59,7 +59,7 @@ export default function StandupsPage() {
         actions={<Button>Start Standup</Button>}
       />
       {standups === undefined ? (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
           {Array.from({ length: 2 }).map((_, index) => (
             <Card key={index} className="animate-pulse">
               <CardContent className="h-40" />

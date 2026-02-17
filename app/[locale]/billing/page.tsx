@@ -95,10 +95,10 @@ export default function BillingPage() {
       />
 
       <Card className="border border-white/5 bg-white/[0.03]">
-        <CardContent className="grid gap-6 p-6 lg:grid-cols-[1.2fr_1fr]">
+        <CardContent className="grid gap-6 p-4 sm:p-6 lg:grid-cols-[1.2fr_1fr]">
           <div className="space-y-3">
             <div className="text-sm text-zinc-400">Total Monthly Cost</div>
-            <div className="text-4xl font-semibold text-white">
+            <div className="text-3xl font-semibold text-white sm:text-4xl">
               {formatCurrency(totalEstimated)}
             </div>
             <div className="text-sm text-zinc-500">
@@ -138,7 +138,7 @@ export default function BillingPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
         <Card className="border border-white/5 bg-white/[0.03]">
           <CardHeader>
             <CardTitle className="text-base">Infrastructure Costs</CardTitle>
@@ -237,7 +237,7 @@ export default function BillingPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {savingsTips.map((tip) => (
           <Card key={tip} className="border border-emerald-500/20 bg-emerald-500/10">
             <CardContent className="p-4 text-sm text-emerald-100">

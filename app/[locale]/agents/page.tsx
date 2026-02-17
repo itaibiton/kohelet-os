@@ -220,7 +220,7 @@ export default function AgentsPage() {
         </Select>
       </div>
       {agents === undefined ? (
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
             <Card key={index} className="animate-pulse">
               <CardContent className="space-y-3 py-6">
@@ -232,7 +232,7 @@ export default function AgentsPage() {
           ))}
         </div>
       ) : view === "grid" ? (
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
           {filteredAgents.map((agent) => {
             const departmentKey = agent.department.toLowerCase();
             const deptStyle = departmentStyles[departmentKey] ?? {
@@ -288,7 +288,7 @@ export default function AgentsPage() {
           )}
         </div>
       ) : (
-        <div className="mt-6 overflow-x-auto pb-6">
+        <div className="mt-6 overflow-x-auto pb-6" style={{ WebkitOverflowScrolling: "touch" }}>
           <div className="min-w-[720px] px-2">
             {treeData ? (
               <div className="flex justify-center">

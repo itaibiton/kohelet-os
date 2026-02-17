@@ -131,7 +131,7 @@ export default function OrgChartPage() {
           <div className="relative">
             <div className="absolute -top-6 left-1/2 h-6 w-px bg-white/10" />
             <div className="absolute -top-6 left-1/2 h-px w-2/3 -translate-x-1/2 bg-white/10" />
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1 sm:gap-6 md:grid-cols-2">
               {csuite.map((agent) => (
                 <NodeCard
                   key={agent._id}
@@ -150,7 +150,7 @@ export default function OrgChartPage() {
             <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">
               Managers
             </div>
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1 sm:gap-6 lg:grid-cols-2">
               {managers.map((manager) => {
                 const workers = workersByManager.get(manager._id) ?? [];
                 const isCollapsed = collapsed[manager._id];

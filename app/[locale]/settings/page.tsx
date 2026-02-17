@@ -19,7 +19,7 @@ export default function SettingsPage() {
         description="Configure the Kohelet OS environment and defaults."
       />
 
-      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid gap-6 grid-cols-1 xl:grid-cols-[1.1fr_0.9fr]">
         <Card>
           <CardHeader>
             <CardTitle>OpenClaw Connection</CardTitle>
@@ -68,7 +68,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Model Configuration</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-3">
+        <CardContent className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           {models.map((model) => (
             <div
               key={model.name}
@@ -95,7 +95,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Notification Preferences</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
+        <CardContent className="grid gap-4 grid-cols-1 md:grid-cols-2">
           {[
             { label: "Critical alerts", desc: "Failures, outages, and high-priority incidents." },
             { label: "Standup summaries", desc: "Daily standup completion digest." },
