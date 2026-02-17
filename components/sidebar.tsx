@@ -18,7 +18,7 @@ export function Sidebar() {
   const t = useTranslations("app.nav");
 
   return (
-    <aside className="hidden w-64 flex-col border-r border-white/5 bg-[#0f1022] px-4 py-6 md:flex">
+    <aside className="hidden w-64 flex-col border-r border-white/10 bg-[#0b0b1a]/95 px-4 py-6 shadow-[0_0_30px_rgba(27,107,109,0.15)] backdrop-blur md:flex">
       <div className="mb-8">
         <div className="text-xl font-semibold text-white">Kohelet OS</div>
         <div className="text-xs text-muted-foreground">

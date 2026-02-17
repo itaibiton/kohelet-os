@@ -18,12 +18,45 @@ export default function StandupsPage() {
   const agents = useQuery(api.agents.list);
   const agentById = new Map(agents?.map((agent) => [agent._id, agent]) ?? []);
 
+  const mockStandups = [
+    {
+      _id: "mock-1",
+      title: "Daily Ops Sync",
+      participants: agents?.slice(0, 4).map((agent) => agent._id) ?? [],
+      status: "completed",
+      scheduledAt: Date.now() - 1000 * 60 * 60 * 6,
+      completedAt: Date.now() - 1000 * 60 * 60 * 5,
+      audioUrl: undefined,
+    },
+    {
+      _id: "mock-2",
+      title: "Product Pulse",
+      participants: agents?.slice(2, 6).map((agent) => agent._id) ?? [],
+      status: "completed",
+      scheduledAt: Date.now() - 1000 * 60 * 60 * 30,
+      completedAt: Date.now() - 1000 * 60 * 60 * 29,
+      audioUrl: undefined,
+    },
+    {
+      _id: "mock-3",
+      title: "Leadership Briefing",
+      participants: agents?.slice(0, 2).map((agent) => agent._id) ?? [],
+      status: "scheduled",
+      scheduledAt: Date.now() + 1000 * 60 * 60 * 3,
+      completedAt: undefined,
+      audioUrl: undefined,
+    },
+  ];
+
+  const standupEntries =
+    standups && standups.length > 0 ? standups : mockStandups;
+
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader
         title="Standups"
         description="Scheduled standups with transcripts and audio playback."
-        actions={<Button>Schedule standup</Button>}
+        actions={<Button>Start Standup</Button>}
       />
       {standups === undefined ? (
         <div className="grid gap-6 lg:grid-cols-2">
@@ -33,61 +66,72 @@ export default function StandupsPage() {
             </Card>
           ))}
         </div>
-      ) : standups.length === 0 ? (
+      ) : (
         <Card>
-          <CardContent className="py-6 text-sm text-muted-foreground">
-            No standups yet.
+          <CardHeader>
+            <CardTitle>Standup Timeline</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {standupEntries.length === 0 ? (
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4 text-sm text-muted-foreground">
+                No standups yet.
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {standupEntries.map((standup) => {
+                  const participants = standup.participants
+                    .map((id) => agentById.get(id))
+                    .filter(Boolean);
+                  return (
+                    <div key={standup._id} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <span className="h-2.5 w-2.5 rounded-full bg-[#1B6B6D]" />
+                        <span className="mt-2 h-full w-px bg-white/10" />
+                      </div>
+                      <div className="flex-1 rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="text-sm font-semibold text-white">
+                            {standup.title}
+                          </div>
+                          <Badge variant={statusVariant[standup.status] ?? "secondary"}>
+                            {standup.status.replace("_", " ")}
+                          </Badge>
+                        </div>
+                        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-400">
+                          {participants.length > 0 ? (
+                            participants.map((agent) => (
+                              <span key={agent!._id} className="text-lg">
+                                {agent!.emoji}
+                              </span>
+                            ))
+                          ) : (
+                            <span>No participants assigned.</span>
+                          )}
+                          <span className="text-zinc-500">
+                            {standup.scheduledAt
+                              ? new Date(standup.scheduledAt).toUTCString()
+                              : standup.completedAt
+                                ? new Date(standup.completedAt).toUTCString()
+                                : "Date TBD"}
+                          </span>
+                        </div>
+                        {standup.audioUrl ? (
+                          <audio controls className="mt-3 w-full">
+                            <source src={standup.audioUrl} />
+                          </audio>
+                        ) : (
+                          <div className="mt-3 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs text-zinc-400">
+                            No audio recorded.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
-      ) : (
-        <div className="grid gap-6 lg:grid-cols-2">
-          {standups.map((standup) => {
-            const participants = standup.participants
-              .map((id) => agentById.get(id))
-              .filter(Boolean);
-            return (
-              <Card key={standup._id}>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    {standup.title}
-                    <Badge variant={statusVariant[standup.status] ?? "secondary"}>
-                      {standup.status}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 text-sm text-muted-foreground">
-                  <div className="flex flex-wrap items-center gap-2">
-                    {participants.length > 0 ? (
-                      participants.map((agent) => (
-                        <span key={agent!._id} className="text-xl">
-                          {agent!.emoji}
-                        </span>
-                      ))
-                    ) : (
-                      <span>No participants assigned.</span>
-                    )}
-                  </div>
-                  <div>
-                    {standup.scheduledAt
-                      ? new Date(standup.scheduledAt).toUTCString()
-                      : standup.completedAt
-                        ? new Date(standup.completedAt).toUTCString()
-                        : "Date TBD"}
-                  </div>
-                  {standup.audioUrl ? (
-                    <audio controls className="w-full">
-                      <source src={standup.audioUrl} />
-                    </audio>
-                  ) : (
-                    <div className="rounded-lg border border-white/5 bg-white/5 p-3 text-xs">
-                      No audio recorded.
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
       )}
     </div>
   );

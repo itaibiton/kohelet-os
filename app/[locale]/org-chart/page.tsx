@@ -1,10 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
@@ -16,113 +15,93 @@ const statusColor: Record<string, string> = {
   offline: "bg-zinc-500",
 };
 
-type AgentNode = {
-  id: string;
+const departmentStyles: Record<string, string> = {
+  dev: "border-blue-500/40",
+  creative: "border-purple-500/40",
+  bizdev: "border-orange-500/40",
+  admin: "border-teal-500/40",
+  devops: "border-emerald-500/40",
+  qa: "border-red-500/40",
+  product: "border-indigo-500/40",
+  executive: "border-yellow-500/40",
+};
+
+function NodeCard({
+  emoji,
+  name,
+  role,
+  status,
+  highlight,
+  department,
+  onClick,
+}: {
+  emoji: string;
   name: string;
   role: string;
-  emoji: string;
   status: string;
-  tier: string;
-  children: AgentNode[];
-};
+  highlight?: string;
+  department?: string;
+  onClick?: () => void;
+}) {
+  const deptKey = department?.toLowerCase() ?? "";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group flex w-full items-center gap-3 rounded-xl border border-white/5 bg-white/[0.03] px-4 py-3 text-left transition hover:bg-white/[0.06] ${
+        highlight ?? ""
+      } ${departmentStyles[deptKey] ?? ""}`}
+    >
+      <span className="text-2xl">{emoji}</span>
+      <div className="flex-1">
+        <div className="text-sm font-semibold text-white">{name}</div>
+        <div className="text-xs text-zinc-400">{role}</div>
+      </div>
+      <span
+        className={`h-2.5 w-2.5 rounded-full ${
+          statusColor[status] ?? "bg-zinc-500"
+        }`}
+      />
+    </button>
+  );
+}
 
 export default function OrgChartPage() {
   const agents = useQuery(api.agents.list);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
-  const tree = useMemo<AgentNode | null>(() => {
-    if (!agents) return null;
-    const byParent = new Map<string | null, AgentNode[]>();
-
-    agents.forEach((agent) => {
-      const node: AgentNode = {
-        id: agent._id,
-        name: agent.name,
-        role: agent.role,
-        emoji: agent.emoji,
-        status: agent.status,
-        tier: agent.tier,
-        children: [],
+  const { csuite, managers, workersByManager } = useMemo(() => {
+    if (!agents) {
+      return {
+        csuite: [],
+        managers: [],
+        workersByManager: new Map<string, typeof agents>(),
       };
-      const parentKey = agent.reportsTo ?? null;
-      const list = byParent.get(parentKey) ?? [];
-      list.push(node);
-      byParent.set(parentKey, list);
-    });
+    }
 
-    const attachChildren = (node: AgentNode) => {
-      const kids = byParent.get(node.id) ?? [];
-      node.children = kids.sort((a, b) => a.name.localeCompare(b.name));
-      node.children.forEach(attachChildren);
-    };
-
-    const csuite = (agents.filter((agent) => agent.tier === "csuite") ?? [])
-      .map((agent) => ({
-        id: agent._id,
-        name: agent.name,
-        role: agent.role,
-        emoji: agent.emoji,
-        status: agent.status,
-        tier: agent.tier,
-        children: [],
-      }))
+    const csuiteAgents = agents
+      .filter((agent) => agent.tier === "csuite")
+      .sort((a, b) => a.name.localeCompare(b.name));
+    const managerAgents = agents
+      .filter((agent) => agent.tier === "manager")
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    csuite.forEach(attachChildren);
+    const workerMap = new Map<string, typeof agents>();
+    agents
+      .filter((agent) => agent.tier === "worker" && agent.reportsTo)
+      .forEach((agent) => {
+        const list = workerMap.get(agent.reportsTo!) ?? [];
+        list.push(agent);
+        workerMap.set(agent.reportsTo!, list);
+      });
 
-    return {
-      id: "itai",
-      name: "Itai",
-      role: "CEO",
-      emoji: "👑",
-      status: "active",
-      tier: "csuite",
-      children: csuite,
-    };
+    workerMap.forEach((list) => list.sort((a, b) => a.name.localeCompare(b.name)));
+
+    return { csuite: csuiteAgents, managers: managerAgents, workersByManager: workerMap };
   }, [agents]);
 
   const toggle = (id: string) => {
     setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const renderNode = (node: AgentNode, depth = 0) => {
-    const isCollapsed = collapsed[node.id];
-    return (
-      <div key={node.id} className="space-y-3">
-        <div
-          className={`flex items-center gap-3 rounded-lg border border-white/5 bg-white/5 p-3 ${
-            depth === 0 ? "bg-white/10" : ""
-          }`}
-        >
-          <span className="text-xl">{node.emoji}</span>
-          <div>
-            <div className="text-white">
-              {node.name} · {node.role}
-            </div>
-            <div className="text-xs text-muted-foreground">{node.tier}</div>
-          </div>
-          <span
-            className={`ml-auto h-2.5 w-2.5 rounded-full ${
-              statusColor[node.status] ?? "bg-zinc-500"
-            }`}
-          />
-          {node.children.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => toggle(node.id)}
-            >
-              {isCollapsed ? "Expand" : "Collapse"}
-            </Button>
-          )}
-        </div>
-        {!isCollapsed && node.children.length > 0 && (
-          <div className="ml-6 grid gap-3 border-l border-white/10 pl-6">
-            {node.children.map((child) => renderNode(child, depth + 1))}
-          </div>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -131,24 +110,91 @@ export default function OrgChartPage() {
         title="Org Chart"
         description="Interactive view of agent hierarchy and reporting lines."
       />
-      {tree === null ? (
+      {agents === undefined ? (
         <Card className="animate-pulse">
           <CardContent className="h-32" />
         </Card>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3">
-              Hierarchy
-              <Badge variant="secondary" className="ml-auto">
-                {agents?.length ?? 0} agents
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {renderNode(tree)}
-          </CardContent>
-        </Card>
+        <div className="space-y-10">
+          <div className="relative flex justify-center">
+            <div className="absolute -bottom-6 left-1/2 h-6 w-px bg-white/10" />
+            <NodeCard
+              emoji="👑"
+              name="Itai"
+              role="CEO"
+              status="active"
+              highlight="border-yellow-500/50 bg-gradient-to-r from-yellow-500/10 to-amber-500/5"
+              department="executive"
+            />
+          </div>
+
+          <div className="relative">
+            <div className="absolute -top-6 left-1/2 h-6 w-px bg-white/10" />
+            <div className="absolute -top-6 left-1/2 h-px w-2/3 -translate-x-1/2 bg-white/10" />
+            <div className="grid gap-6 md:grid-cols-2">
+              {csuite.map((agent) => (
+                <NodeCard
+                  key={agent._id}
+                  emoji={agent.emoji}
+                  name={agent.name}
+                  role={agent.role}
+                  status={agent.status}
+                  highlight="border-blue-500/40 bg-gradient-to-br from-blue-500/10 to-emerald-500/10"
+                  department={agent.department}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+              Managers
+            </div>
+            <div className="grid gap-6 lg:grid-cols-2">
+              {managers.map((manager) => {
+                const workers = workersByManager.get(manager._id) ?? [];
+                const isCollapsed = collapsed[manager._id];
+                return (
+                  <div key={manager._id} className="relative">
+                    <div className="absolute -top-4 left-1/2 h-4 w-px -translate-x-1/2 bg-white/10" />
+                    <NodeCard
+                      emoji={manager.emoji}
+                      name={manager.name}
+                      role={manager.role}
+                      status={manager.status}
+                      department={manager.department}
+                      onClick={() => toggle(manager._id)}
+                    />
+                    <div className="mt-3 flex items-center justify-between text-xs text-zinc-500">
+                      <Badge variant="secondary">{manager.department}</Badge>
+                      <span>{isCollapsed ? "Expand" : "Collapse"} workers</span>
+                    </div>
+                    {!isCollapsed && (
+                      <div className="relative mt-4 space-y-2 border-l border-white/10 pl-4">
+                        {workers.length === 0 ? (
+                          <div className="text-xs text-zinc-500">No workers assigned.</div>
+                        ) : (
+                          workers.map((worker) => (
+                            <div key={worker._id} className="relative">
+                              <div className="absolute left-[-17px] top-4 h-px w-4 bg-white/10" />
+                              <NodeCard
+                                emoji={worker.emoji}
+                                name={worker.name}
+                                role={worker.role}
+                                status={worker.status}
+                                department={worker.department}
+                              />
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

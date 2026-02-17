@@ -18,16 +18,20 @@ const MODEL_RATES = [
 ];
 
 const infrastructureCosts = [
-  { service: "AWS EC2 m7i-flex.large", type: "Compute", monthly: 70.0 },
-  { service: "AWS EBS 30GB gp3", type: "Storage", monthly: 2.4 },
-  { service: "AWS Data Transfer", type: "Network", monthly: 4.0 },
-  { service: "Genspark Plus", type: "AI Creative", monthly: 24.99 },
-  { service: "Google Workspace (REOS)", type: "Email/Drive", monthly: 12.0 },
-  { service: "Vercel Hobby", type: "Hosting", monthly: 0.0 },
-  { service: "Convex Free", type: "Database", monthly: 0.0 },
-  { service: "Clerk Free", type: "Auth", monthly: 0.0 },
-  { service: "GitHub Free", type: "Code", monthly: 0.0 },
-  { service: "Brave Search Free", type: "Search", monthly: 0.0 },
+  { service: "AWS EC2 m7i-flex.large", type: "Compute", monthly: 70.0, icon: "🖥️" },
+  { service: "AWS EBS 30GB gp3", type: "Storage", monthly: 2.4, icon: "💾" },
+  { service: "AWS Data Transfer", type: "Network", monthly: 4.0, icon: "🌐" },
+  { service: "Genspark Plus", type: "AI Creative", monthly: 24.99, icon: "✨" },
+  { service: "Google Workspace (REOS)", type: "Email/Drive", monthly: 12.0, icon: "📧" },
+  { service: "Vercel Hobby", type: "Hosting", monthly: 0.0, icon: "⚡" },
+  { service: "Convex Free", type: "Database", monthly: 0.0, icon: "🧠" },
+  { service: "Clerk Free", type: "Auth", monthly: 0.0, icon: "🔐" },
+];
+
+const savingsTips = [
+  "Switch to Mac Mini for local inference and save ~$70/mo",
+  "Use Gemini for low-stakes tasks to reduce premium token spend",
+  "Batch cron jobs to cut session spawn overhead",
 ];
 
 function formatCurrency(value: number) {
@@ -76,6 +80,13 @@ export default function BillingPage() {
     cost: 0,
   }));
 
+  const breakdown = [
+    { label: "Infrastructure", value: awsCost, color: "bg-blue-500" },
+    { label: "Services", value: servicesCost, color: "bg-indigo-500" },
+    { label: "AI Usage", value: aiCost, color: "bg-emerald-500" },
+  ];
+  const total = breakdown.reduce((sum, item) => sum + item.value, 0) || 1;
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -83,62 +94,116 @@ export default function BillingPage() {
         description="Track AI usage, infrastructure spend, and optimization levers."
       />
 
-      <div className="grid gap-4 lg:grid-cols-4">
-        <Card className="border-emerald-500/30 bg-emerald-500/10">
-          <CardHeader>
-            <CardTitle className="text-sm text-emerald-200">
-              Total Estimated Cost
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-2xl font-semibold text-white">
-            {formatCurrency(totalEstimated)}
-          </CardContent>
-        </Card>
-        <Card className="border-blue-500/30 bg-blue-500/10">
-          <CardHeader>
-            <CardTitle className="text-sm text-blue-200">AWS EC2 Cost</CardTitle>
-          </CardHeader>
-          <CardContent className="text-2xl font-semibold text-white">
-            {formatCurrency(awsCost)}
-            <div className="mt-1 text-xs text-muted-foreground">
-              m7i-flex.large
+      <Card className="border border-white/5 bg-white/[0.03]">
+        <CardContent className="grid gap-6 p-6 lg:grid-cols-[1.2fr_1fr]">
+          <div className="space-y-3">
+            <div className="text-sm text-zinc-400">Total Monthly Cost</div>
+            <div className="text-4xl font-semibold text-white">
+              {formatCurrency(totalEstimated)}
             </div>
-          </CardContent>
-        </Card>
-        <Card className="border-emerald-500/30 bg-emerald-500/5">
-          <CardHeader>
-            <CardTitle className="text-sm text-emerald-200">AI API Cost</CardTitle>
-          </CardHeader>
-          <CardContent className="text-2xl font-semibold text-white">
-            {formatCurrency(aiCost)}
-            <div className="mt-1 text-xs text-muted-foreground">
-              {totalTokens.toLocaleString()} tokens processed
+            <div className="text-sm text-zinc-500">
+              Updated {lastUpdated}
             </div>
+            <div className="space-y-2 pt-2 text-sm text-zinc-400">
+              {breakdown.map((item) => (
+                <div key={item.label} className="flex items-center justify-between">
+                  <span>{item.label}</span>
+                  <span className="text-white">{formatCurrency(item.value)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div className="text-sm text-zinc-400">Cost Breakdown</div>
+            <div className="h-3 w-full overflow-hidden rounded-full bg-white/10">
+              {breakdown.map((item, index) => (
+                <div
+                  key={item.label}
+                  className={`${item.color} h-3`}
+                  style={{ width: `${(item.value / total) * 100}%`, display: "inline-block" }}
+                />
+              ))}
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {breakdown.map((item) => (
+                <div key={item.label} className="rounded-xl border border-white/5 bg-white/[0.04] p-3">
+                  <div className="text-xs text-zinc-500">{item.label}</div>
+                  <div className="text-sm font-semibold text-white">
+                    {formatCurrency(item.value)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="border border-white/5 bg-white/[0.03]">
+          <CardHeader>
+            <CardTitle className="text-base">Infrastructure Costs</CardTitle>
+          </CardHeader>
+          <CardContent className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-left text-zinc-500">
+                <tr>
+                  <th className="pb-2">Service</th>
+                  <th className="pb-2">Type</th>
+                  <th className="pb-2">Monthly Cost</th>
+                </tr>
+              </thead>
+              <tbody className="text-white">
+                {infrastructureCosts.map((item, index) => (
+                  <tr
+                    key={item.service}
+                    className={`border-t border-white/5 ${
+                      index % 2 === 0 ? "bg-white/[0.02]" : "bg-transparent"
+                    }`}
+                  >
+                    <td className="py-3 font-medium">
+                      <span className="mr-2">{item.icon}</span>
+                      {item.service}
+                    </td>
+                    <td className="py-3 text-zinc-400">{item.type}</td>
+                    <td className="py-3 text-zinc-400">{formatCurrency(item.monthly)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </CardContent>
         </Card>
-        <Card className="border-blue-500/30 bg-blue-500/5">
+
+        <Card className="border border-white/5 bg-white/[0.03]">
           <CardHeader>
-            <CardTitle className="text-sm text-blue-200">Services Cost</CardTitle>
+            <CardTitle className="text-base">AI Costs</CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold text-white">
-            {formatCurrency(servicesCost)}
-            <div className="mt-1 text-xs text-muted-foreground">
-              Genspark + Google Workspace
+          <CardContent className="space-y-4">
+            <div className="rounded-xl border border-white/5 bg-white/[0.04] p-4">
+              <div className="text-sm text-zinc-400">Tokens processed</div>
+              <div className="text-2xl font-semibold text-white">
+                {totalTokens.toLocaleString()}
+              </div>
+            </div>
+            <div className="rounded-xl border border-white/5 bg-white/[0.04] p-4">
+              <div className="text-sm text-zinc-400">AI Spend</div>
+              <div className="text-2xl font-semibold text-white">
+                {formatCurrency(aiCost)}
+              </div>
+            </div>
+            <div className="text-xs text-zinc-500">
+              Placeholder aggregation — add model tracking to sessions for live splits.
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
+      <Card className="border border-white/5 bg-white/[0.03]">
         <CardHeader>
-          <CardTitle className="text-base">AI Cost Breakdown</CardTitle>
-          <div className="text-xs text-muted-foreground">
-            Placeholder aggregation — add model tracking to sessions for live splits.
-          </div>
+          <CardTitle className="text-base">Model Rate Reference</CardTitle>
         </CardHeader>
         <CardContent className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-left text-muted-foreground">
+            <thead className="text-left text-zinc-500">
               <tr>
                 <th className="pb-2">Model</th>
                 <th className="pb-2">Price (Input/Output per 1M)</th>
@@ -158,11 +223,11 @@ export default function BillingPage() {
                       row.price
                     )}
                   </td>
-                  <td className="py-3 text-muted-foreground">{row.sessions}</td>
-                  <td className="py-3 text-muted-foreground">
+                  <td className="py-3 text-zinc-400">{row.sessions}</td>
+                  <td className="py-3 text-zinc-400">
                     {row.tokens.toLocaleString()}
                   </td>
-                  <td className="py-3 text-muted-foreground">
+                  <td className="py-3 text-zinc-400">
                     {formatCurrency(row.cost)}
                   </td>
                 </tr>
@@ -172,56 +237,14 @@ export default function BillingPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Infrastructure Costs</CardTitle>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="text-left text-muted-foreground">
-              <tr>
-                <th className="pb-2">Service</th>
-                <th className="pb-2">Type</th>
-                <th className="pb-2">Monthly Cost</th>
-              </tr>
-            </thead>
-            <tbody className="text-white">
-              {infrastructureCosts.map((item) => (
-                <tr key={item.service} className="border-t border-white/5">
-                  <td className="py-3 font-medium">{item.service}</td>
-                  <td className="py-3 text-muted-foreground">{item.type}</td>
-                  <td className="py-3 text-muted-foreground">
-                    {item.service.includes("Total")
-                      ? item.monthly
-                      : formatCurrency(item.monthly)}
-                  </td>
-                </tr>
-              ))}
-              <tr className="border-t border-white/5 font-semibold">
-                <td className="py-3">Total Infrastructure</td>
-                <td className="py-3 text-muted-foreground"></td>
-                <td className="py-3 text-muted-foreground">~$113</td>
-              </tr>
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Cost Optimization Tips</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
-          <div>• Switch to Mac Mini: Save ~$70/mo (ROI: 8 months)</div>
-          <div>
-            • Use Gemini (free) for routine tasks instead of Opus ($75/1M output)
-          </div>
-          <div>• Batch similar cron jobs to reduce session spawns</div>
-        </CardContent>
-      </Card>
-
-      <div className="text-xs text-muted-foreground">
-        Last updated: {lastUpdated}
+      <div className="grid gap-4 lg:grid-cols-3">
+        {savingsTips.map((tip) => (
+          <Card key={tip} className="border border-emerald-500/20 bg-emerald-500/10">
+            <CardContent className="p-4 text-sm text-emerald-100">
+              {tip}
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );

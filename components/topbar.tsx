@@ -29,7 +29,7 @@ export function Topbar() {
   const t = useTranslations("app.nav");
 
   return (
-    <header className="sticky top-0 z-20 border-b border-white/5 bg-[#0b0b1a]/80 px-6 py-4 backdrop-blur md:px-10">
+    <header className="sticky top-0 z-20 border-b border-white/10 bg-[#0b0b1a]/90 px-6 py-4 shadow-[0_8px_30px_rgba(2,6,23,0.6)] backdrop-blur md:px-10">
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">Kohelet OS</div>
         <nav className="flex flex-wrap items-center gap-3 md:hidden">
